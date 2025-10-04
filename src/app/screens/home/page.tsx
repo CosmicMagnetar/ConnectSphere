@@ -1,5 +1,5 @@
 "use client";
-
+import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { Code, Users, MessageCircle, Star, Sparkles, ArrowRight, Zap, Target, Globe } from 'lucide-react';
 import Image from 'next/image';
@@ -92,7 +92,7 @@ export default function HomePage() {
           </div>
           <nav className="hidden md:flex items-center gap-8">
             <a href="#" className="text-gray-300 hover:text-white transition-colors">Home</a>
-            <a href="#" className="text-gray-400 hover:text-gray-300 transition-colors">Mentors</a>
+            <Link href="/screens/dashboard" className="text-gray-400 hover:text-gray-300 transition-colors">Mentors</Link>
             <a href="#" className="text-gray-400 hover:text-gray-300 transition-colors">About</a>
             <button className="px-6 py-2 rounded-full font-semibold bg-gradient-to-r from-blue-600 to-purple-600 text-white relative overflow-hidden group cursor-pointer">
               <span className="relative z-10">Get Started</span>
@@ -119,12 +119,12 @@ export default function HomePage() {
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
           <button className="cursor-pointer px-8 py-4 rounded-full font-bold text-lg bg-gradient-to-r from-blue-600 to-purple-600 text-white relative overflow-hidden group shadow-lg shadow-blue-500/50">
-            <span className="relative z-10 flex items-center gap-2">Find Mentors<ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" /></span>
+            <Link href="/screens/dashboard" className="relative z-10 flex items-center gap-2">Find Mentors<ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" /></Link>
             <div className="absolute inset-0 bg-gradient-to-r from-blue-700 to-purple-700 translate-x-full group-hover:translate-x-0 transition-transform duration-300"></div>
             <div className="absolute inset-0 bg-white/20 scale-0 group-hover:scale-100 transition-transform duration-500 rounded-full"></div>
           </button>
           <button className="px-8 cursor-pointer py-4 rounded-full font-bold text-lg bg-white/5 backdrop-blur-xl border border-white/10 text-white relative overflow-hidden group">
-            <span className="relative z-10">Become a Mentor</span>
+            <Link href="/screens/dashboardmentor" className="relative z-10">Become a Mentor</Link>
             <div className="absolute inset-0 bg-gradient-to-r from-blue-600/20 to-purple-600/20 opacity-0 group-hover:opacity-100 transition-opacity"></div>
           </button>
         </div>
