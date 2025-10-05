@@ -1,6 +1,5 @@
 "use client";
-// screens/mentor-dashboard/page.tsx
-"use client";
+
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
@@ -14,8 +13,6 @@ import {
   Star,
   Award,
   CheckCircle,
-  AlertCircle,
-  Settings,
   Bell,
   Search,
   Filter,
@@ -25,13 +22,11 @@ import {
   BookOpen,
   Zap,
   Target,
-  Eye,
   Edit,
 } from "lucide-react";
 import ChatbotPopup from "@/app/components/ChatbotPopup";
 
 export default function MentorDashboard() {
-  const [activeTab, setActiveTab] = useState("overview");
   const [selectedRequest, setSelectedRequest] = useState<number | null>(null);
 
   // Mentor's stats

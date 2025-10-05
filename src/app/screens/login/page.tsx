@@ -46,9 +46,14 @@ export default function LoginPage() {
 
       // ✅ Successful login
       router.push("/screens/dashboard");
-    } catch (err: any) {
+    // ✅ Changed 'any' to 'unknown' and added a type check to fix the error
+    } catch (err: unknown) {
       console.error("Unexpected error:", err);
-      setError(err.message || "Something went wrong.");
+      if (err instanceof Error) {
+          setError(err.message);
+      } else {
+          setError("An unexpected error occurred. Please try again.");
+      }
     } finally {
       setLoading(false);
     }
@@ -166,7 +171,8 @@ export default function LoginPage() {
         </div>
 
         <p className="text-center text-sm text-slate-400 mt-6">
-          Don't have an account?{" "}
+          {/* ✅ Escaped the apostrophe in "Don't" */}
+          Don&apos;t have an account?{" "}
           <Link
             href="/signup"
             className="text-cyan-400 hover:text-cyan-300 font-medium transition-colors"

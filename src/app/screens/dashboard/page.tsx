@@ -1,29 +1,20 @@
 "use client";
 
-import React, { useState, useEffect, FC } from 'react';
-import { supabase } from "../../supabaseClient";  // ✅ Make sure this path exists
-// Note: Next.js components are replaced with standard HTML tags for this environment.
-const Image = (props: any) => <img {...props} />;
-const Link = ({ href, ...props }: any) => <a href={href} {...props} />;
+import React, { useState, useEffect } from 'react';
+import { supabase } from "../../supabaseClient";
 
+// NOTE: Using standard HTML attributes for mock components to fix 'any' type errors.
+const Image = (props: React.ImgHTMLAttributes<HTMLImageElement>) => <img {...props} />;
+const Link = (props: React.AnchorHTMLAttributes<HTMLAnchorElement>) => <a {...props} />;
 
 import {
-  Code,
   Users,
-  MessageCircle,
   Star,
   Bell,
   Search,
   Calendar,
-  Video,
-  BookOpen,
   TrendingUp,
-  Award,
   Clock,
-  Send,
-  Zap,
-  CheckCircle,
-  MessageSquare,
   X,
 } from "lucide-react";
 import ChatbotPopup from '@/app/components/ChatbotPopup';
@@ -57,13 +48,21 @@ interface Meeting {
     type: "mentor" | "workshop" | "review";
 }
 
+// ✅ Added Profile interface for type safety
+interface Profile {
+    name: string;
+    email: string;
+    // Add any other fields you expect from your 'profiles' table
+}
+
 
 export default function Dashboard() {
-  const [profile, setProfile] = useState<any>(null);
+  // ✅ Typed useState hooks to remove 'any'
+  const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
   const [userSkills, setUserSkills] = useState<string[]>(["React", "Node.js"]);
   const [newSkill, setNewSkill] = useState("");
-  const [currentMentor, setCurrentMentor] = useState<any>(null);
+  const [currentMentor, setCurrentMentor] = useState<Mentor | null>(null);
   const [showMentorModal, setShowMentorModal] = useState(false);
   const [requestSent, setRequestSent] = useState<number[]>([]);
 
@@ -114,8 +113,8 @@ export default function Dashboard() {
     setUserSkills(userSkills.filter((s) => s !== skill));
   };
 
-  // Request Mentor
-  const handleRequestMentor = (mentor: any) => {
+  // ✅ Typed mentor parameter
+  const handleRequestMentor = (mentor: Mentor) => {
     setRequestSent([...requestSent, mentor.id]);
     setTimeout(() => {
       setCurrentMentor(mentor);
@@ -202,7 +201,8 @@ export default function Dashboard() {
 
       <main className="relative max-w-7xl mx-auto px-6 py-8 z-10">
         <h1 className="text-4xl font-bold mb-2 text-white">Welcome back, {profile?.name ?? "Mentee"} 👋</h1>
-        <p className="text-gray-400 mb-8">Here's what's happening with your mentorship journey</p>
+        {/* ✅ Escaped apostrophe in "Here's" */}
+        <p className="text-gray-400 mb-8">Here&apos;s what&apos;s happening with your mentorship journey</p>
 
         {/* Main Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -324,4 +324,3 @@ export default function Dashboard() {
     </div>
   );
 }
-
