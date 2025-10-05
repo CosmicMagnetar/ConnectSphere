@@ -26,6 +26,7 @@ import {
   MessageSquare,
   X,
 } from "lucide-react";
+import ChatbotPopup from '@/app/components/ChatbotPopup';
 
 // Interfaces for new data structures
 interface Mentor {
@@ -319,6 +320,7 @@ export default function Dashboard() {
           </div>
         )}
       </main>
+      <ChatbotPopup />
     </div>
   );
 }

@@ -28,6 +28,7 @@ import {
   Eye,
   Edit,
 } from "lucide-react";
+import ChatbotPopup from "@/app/components/ChatbotPopup";
 
 export default function MentorDashboard() {
   const [activeTab, setActiveTab] = useState("overview");
