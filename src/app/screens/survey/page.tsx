@@ -21,7 +21,7 @@ const supabase = {
     },
   },
   from: (tableName: string) => ({
-    upsert: async (data: any) => {
+    upsert: async (data: Record<string, unknown>) => {
       console.log(`[MOCK] Upserting to ${tableName}:`, data);
       return { error: null };
     },
@@ -31,7 +31,7 @@ const supabase = {
         return { error: null };
       },
     }),
-    insert: async (data: any) => {
+    insert: async (data: Record<string, unknown> | Array<Record<string, unknown>>) => {
       console.log(`[MOCK] Inserting into ${tableName}:`, data);
       return { error: null };
     },
@@ -122,7 +122,7 @@ export default function ProfileSurvey() {
       animationDelay: `${Math.random() * 2}s`, opacity: 0.6,
     }));
     setParticles(generated);
-  }, []); // Removed router from dependency array as the mock is stable.
+  }, [router]);
 
   const techOptions = ["JavaScript","Python","Java","C++","React","Node.js","Django","Go","Rust","TypeScript", "Next.js", "Tailwind CSS", "SQL"];
   const levelOptions = ["Beginner","Intermediate","Advanced","Expert"];
