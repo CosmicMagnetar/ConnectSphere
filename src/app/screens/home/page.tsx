@@ -1,7 +1,35 @@
 "use client";
 
-import Link from 'next/link';
-import { useState, useEffect, FC } from 'react';
+import React, { useState, useEffect, FC } from 'react';
+// Imports for Next.js-specific components like Link, useRouter, and Image have been removed 
+// as they are not available in this environment. Standard web APIs and HTML tags will be used instead.
+
+// A more stateful mock to better simulate authentication flow for demonstration.
+let mockSession: any = { user: { id: 'mock-user-id' } }; // Start in a logged-in state
+let authStateChangeCallback: (event: string, session: any) => void = () => {};
+
+const supabase = {
+  auth: {
+    getSession: async () => {
+      // Return the current state of our mock session
+      return { data: { session: mockSession } };
+    },
+    onAuthStateChange: (callback: (event: string, session: any) => void) => {
+      // Store the component's callback function so we can call it later
+      authStateChangeCallback = callback;
+      return { data: { subscription: { unsubscribe: () => {} } } };
+    },
+    signOut: async () => {
+      console.log("Signing out...");
+      // 1. Update the internal state to logged out
+      mockSession = null;
+      // 2. Notify the component that the user has signed out
+      authStateChangeCallback('SIGNED_OUT', null);
+    },
+  },
+};
+
+
 import {
   Users,
   Code,
@@ -19,9 +47,13 @@ import {
   Terminal,
   Twitter,
   Github,
-  Linkedin
+  Linkedin,
+  LogOut,
+  UserCircle
 } from 'lucide-react';
-import Image from 'next/image';
+
+// The Next.js Image component is replaced with the standard <img> tag.
+const Image = (props: any) => <img {...props} />;
 
 interface Particle {
   id: number;
@@ -56,6 +88,34 @@ export default function HomePage() {
   const [hoveredCard, setHoveredCard] = useState<number | null>(null);
   const [particles, setParticles] = useState<Particle[]>([]);
   const [currentQuote, setCurrentQuote] = useState(0);
+  const [session, setSession] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  
+  // The useRouter hook from Next.js is not needed; standard window.location will be used.
+
+  // Check for active session
+  useEffect(() => {
+    const getSession = async () => {
+      const { data } = await supabase.auth.getSession();
+      setSession(data.session);
+      setLoading(false);
+    };
+    getSession();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+    });
+
+    return () => {
+      subscription?.unsubscribe();
+    };
+  }, []);
+
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    // The onAuthStateChange listener now handles the state update and re-render.
+    // A manual redirect is no longer needed.
+  };
 
   // Particle generation
   useEffect(() => {
@@ -134,19 +194,36 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-full flex items-center justify-center bg-gradient-to-br from-blue-600 to-purple-600 shadow-lg shadow-blue-500/50">
-              <Image src="/connect.png" alt="Logo" width={40} height={40} />
+              <Image src="/connect.png" alt="Logo" className="w-full h-full" />
             </div>
             <span className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">Connect Sphere</span>
           </div>
           <nav className="hidden md:flex items-center gap-8">
-            <a href="#" className="text-gray-300 hover:text-white transition-colors">Home</a>
-            <Link href="/screens/dashboard" className="text-gray-400 hover:text-gray-300 transition-colors">Mentors</Link>
-            <a href="#" className="text-gray-400 hover:text-gray-300 transition-colors">About</a>
-            <button className="px-6 py-2 rounded-full font-semibold bg-gradient-to-r from-blue-600 to-purple-600 text-white relative overflow-hidden group cursor-pointer">
-              <span className="relative z-10">Get Started</span>
-              <div className="absolute inset-0 bg-gradient-to-r from-blue-700 to-purple-700 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-              <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
-            </button>
+            <a href="/" className="text-gray-300 hover:text-white transition-colors">Home</a>
+            <a href={session ? "/screens/dashboard" : "/screens/signup"} className="text-gray-400 hover:text-gray-300 transition-colors">Mentors</a>
+            {!loading && (
+              session ? (
+                <div className="flex items-center gap-4">
+                  <a href="/screens/dashboard" className="flex items-center gap-2 px-6 py-2 rounded-full font-semibold bg-gradient-to-r from-blue-600 to-purple-600 text-white relative overflow-hidden group cursor-pointer">
+                    <UserCircle className="w-5 h-5" />
+                    <span className="relative z-10">Profile</span>
+                  </a>
+                  <button onClick={handleSignOut} className="p-2 rounded-full text-gray-300 hover:text-white hover:bg-white/10 transition-colors">
+                    <LogOut className="w-5 h-5" />
+                  </button>
+                </div>
+              ) : (
+                <div className="flex items-center gap-2">
+                  <a href="/screens/login" className="px-6 py-2 rounded-full font-semibold text-gray-300 hover:text-white hover:bg-white/10 transition-all">
+                    Sign In
+                  </a>
+                  <a href="/screens/signup" className="px-6 py-2 rounded-full font-semibold bg-gradient-to-r from-blue-600 to-purple-600 text-white relative overflow-hidden group cursor-pointer">
+                    <span className="relative z-10">Get Started</span>
+                    <div className="absolute inset-0 bg-gradient-to-r from-blue-700 to-purple-700 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                  </a>
+                </div>
+              )
+            )}
           </nav>
         </div>
       </header>
@@ -184,14 +261,14 @@ export default function HomePage() {
         </div>
 
         <div className="flex gap-4 justify-center">
-          <button className="group px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white rounded-xl font-semibold text-lg transition-all shadow-xl shadow-blue-500/30 flex items-center gap-3">
+          <a href="/screens/signup" className="group px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white rounded-xl font-semibold text-lg transition-all shadow-xl shadow-blue-500/30 flex items-center gap-3">
             <Rocket className="w-5 h-5" />
             Explore Opportunities
             <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-          </button>
-          <button className="px-8 py-4 bg-white/5 backdrop-blur-xl border border-white/10 text-white rounded-xl font-semibold text-lg transition-all">
+          </a>
+          <a href={session ? "/screens/dashboard" : "/screens/signup"} className="px-8 py-4 bg-white/5 backdrop-blur-xl border border-white/10 text-white rounded-xl font-semibold text-lg transition-all">
             Find a Mentor
-          </button>
+          </a>
         </div>
       </section>
 
@@ -237,7 +314,7 @@ export default function HomePage() {
       <footer className="relative backdrop-blur-xl border-t border-white/5 mt-20 z-10">
         <div className="max-w-7xl mx-auto px-6 py-12 flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="flex items-center gap-3">
-            <Image src="/connect.png" alt="Logo" width={40} height={40} />
+            <Image src="/connect.png" alt="Logo" className="w-10 h-10" />
             <span className="text-xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">Connect Sphere</span>
           </div>
           <div className="flex gap-6 text-gray-400">
@@ -258,3 +335,4 @@ export default function HomePage() {
     </div>
   );
 }
+
